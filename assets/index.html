@@ -1,0 +1,32 @@
+<!DOCTYPE html> 
+<html>
+<head>
+<title>What's Open?</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="css/bootstrap.min.css">
+<link rel="stylesheet" href="css/main.css">
+<script src="js/jquery-1.11.1.min.js"></script>
+</head>
+<body>
+<script src="js/handlebars.min.js"></script>
+<script src="js/geoPosition.js"></script>
+<script src="js/main.js"></script>
+<script type="text/template" id="results-template">
+	<h2>Where you can eat right now, ranked by distance</h2>
+	<ul class='list-group'>
+		{{#each results}}
+		<li class='list-group-item'>
+			<h3>{{this.name}}</h3>
+			<span class='address'>{{this.address}}</span>
+			<img src='{{this.icon}}' width='53' height='53'>
+		</li>
+		{{/each}}
+	</ul>
+</script>
+<nav class="navbar navbar-default">
+  <span class="navbar-brand">What's Open</span>
+</nav>
+<div id="results" class="container">
+  	<h2>When you need to know where you can eat, right now</h2>
+</div>
+</body>
