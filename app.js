@@ -26,7 +26,7 @@ app.get('/open', function(req, res){
 	var parameters = {
 		'key': api_key,
 		'location': latitude + ',' + longitude, //has to be (latitude,longitude)
-		'types': 'food',
+		'types': 'restaurant',
 		'rankby': 'distance',
 		'opennow': ''
     }
