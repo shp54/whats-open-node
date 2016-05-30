@@ -1,18 +1,11 @@
 var request = require('request');
 var express = require('express');
+var assign = require('object-assign')
+var apiParameters = require('./api/parameters')
+var apiUtils = require('./api/utils')
+
 var app = express();
-
 app.use(express.static('assets'))
-
-var api_key = 'AIzaSyAsaKDM1E9cv45rSvphS8hv1X7eKtovbBg';
-
-function buildQueryString(params){
-	var result = [];
-	for(var p in params){
-		result.push(p + '=' + params[p]);
-	}
-	return result.join('&');
-}
 
 app.get('/', function(req, res){
 	res.sendfile("index.html");
@@ -23,19 +16,9 @@ app.get('/open', function(req, res){
 	var longitude = req.query.long;
 	console.log("Request coming from coordinates %s, %s", latitude, longitude);
 	
-	var parameters = {
-		'key': api_key,
-		'location': latitude + ',' + longitude, //has to be (latitude,longitude)
-		'types': 'restaurant',
-		'rankby': 'distance',
-		'opennow': ''
-    }
-	
-	var queryString = buildQueryString(parameters);
-	
-	var url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?'
-	
-	request(url + queryString, function(error, response, body){
+	var params = assign(apiParameters.params, { location: latitude + ',' + longitude })//Add location to API parameters
+	var url = apiUtils.buildUrl(params);
+	request(url, function(error, response, body){
 		if (!error && response.statusCode == 200) {
 			res.json(body); //Send body back to client, let them deal with it
 		}
