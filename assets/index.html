@@ -5,29 +5,38 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="css/bootstrap.min.css">
 <link rel="stylesheet" href="css/main.css">
-<script src="js/jquery-1.11.1.min.js"></script>
+
 </head>
 <body>
+<!-- Load scripts, change to browserify later -->
+
+<script src="js/jquery-1.11.1.min.js"></script>
+<script src="js/underscore.js"></script>
+<script src="js/backbone.js"></script>
 <script src="js/handlebars.min.js"></script>
 <script src="js/geoPosition.js"></script>
 <script src="js/apiUtils.js"></script>
 <script src="js/main.js"></script>
+
 <script type="text/template" id="results-template">
-	<h2>Where you can eat right now, ranked by distance</h2>
 	<ul class='list-group'>
-		{{#each results}}
+		{{#each .}}
 		<li class='list-group-item'>
-			<h3>{{this.name}}</h3>
-			<span class='address'>{{this.address}}</span>
-			<img src='{{this.icon}}' width='53' height='53'>
+			<h3>{{name}}</h3>
+			<span class='address'>{{vicinity}}</span>
+			<img src='{{icon}}' width='53' height='53'>
 		</li>
 		{{/each}}
 	</ul>
 </script>
+
 <nav class="navbar navbar-default">
   <span class="navbar-brand">What's Open</span>
 </nav>
-<div id="results" class="container">
-  	<h2>When you need to know where you can eat, right now</h2>
-</div>
+<h2>When you need to know where you can eat, right now</h2>
+<span id="subheading" style="display: none">
+	<h3>Ranked by distance</h3>
+</span>
+<div id="results" class="container"></div>
+
 </body>
