@@ -2,7 +2,7 @@ $(document).ready(function(){
 	
 	appEvents = _.extend({}, Backbone.Events);
 	
-	var ResultsCollection = Backbone.Collection.extend({
+	let ResultsCollection = Backbone.Collection.extend({
 		initialize(models, options){
 			this.latitude = options && options.latitude; 
 			this.longitude = options && options.longitude; 
@@ -14,12 +14,11 @@ $(document).ready(function(){
 			})}` 
 		},
 		parse(data){
-			var data = JSON.parse(data);
-			return data.results;
+			return JSON.parse(data).results;
 		}
 	});
 	
-	var ResultsView = Backbone.View.extend({
+	let ResultsView = Backbone.View.extend({
 		el: "#results",
 		template: Handlebars.compile($("#results-template").text()),
 		initialize(options){
@@ -32,11 +31,11 @@ $(document).ready(function(){
 		}
 	});
 	
-	var AppView = Backbone.View.extend({
+	let AppView = Backbone.View.extend({
 		el: "body",
 		geoSuccess(p){
 			console.log(`Found user's location at ${p.coords.latitude}, ${p.coords.longitude}`);
-			var results = new ResultsCollection([], { latitude: p.coords.latitude, longitude: p.coords.longitude });
+			let results = new ResultsCollection([], { latitude: p.coords.latitude, longitude: p.coords.longitude });
 			results.fetch().done(() => { appEvents.trigger("app:loadResults", results); });
 		},
 		geoError(p){
@@ -47,10 +46,10 @@ $(document).ready(function(){
 			
 			this.listenTo(appEvents, "app:loadResults", (results) => {
 				this.$("#subheading").css("display", "block"); //Display subheading
-				var resultsView = new ResultsView({ collection: results });
+				let resultsView = new ResultsView({ collection: results });
 			});
 		}
 	});
 	
-	var app = new AppView(); //Kickstart the app
+	let app = new AppView(); //Kickstart the app
 });
