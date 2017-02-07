@@ -1,8 +1,8 @@
 var request = require('request');
 var express = require('express');
 var assign = require('object-assign')
-var apiParameters = require('./api/parameters')
-var apiUtils = require('./api/utils')
+var apiParameters = require('./assets/js/apiParams')
+var apiUtils = require('./assets/js/apiUtils')
 
 var app = express();
 app.use(express.static('assets'))
