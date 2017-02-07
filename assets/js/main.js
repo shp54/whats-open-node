@@ -8,10 +8,10 @@ $(document).ready(function(){
 			this.longitude = options && options.longitude; 
 		},
 		url(){
-			return "/open?" + buildQueryString({
+			return `/open?${buildQueryString({
 				"lat": this.latitude,
 				"long": this.longitude
-			}) 
+			})}` 
 		},
 		parse(data){
 			var data = JSON.parse(data);
@@ -35,7 +35,7 @@ $(document).ready(function(){
 	var AppView = Backbone.View.extend({
 		el: "body",
 		geoSuccess(p){
-			console.log("Found user's location at " + p.coords.latitude + ", " + p.coords.longitude);
+			console.log(`Found user's location at ${p.coords.latitude}, ${p.coords.longitude}`);
 			var results = new ResultsCollection([], { latitude: p.coords.latitude, longitude: p.coords.longitude });
 			results.fetch().done(() => { appEvents.trigger("app:loadResults", results); });
 		},
@@ -43,8 +43,6 @@ $(document).ready(function(){
 			alert("Couldn't find your location. We kind of need that");
 		},
 		initialize(){			
-			var view = this;
-			
 			geoPosition.init && geoPosition.init() && geoPosition.getCurrentPosition(this.geoSuccess.bind(this), this.geoError.bind(this));
 			
 			this.listenTo(appEvents, "app:loadResults", (results) => {
