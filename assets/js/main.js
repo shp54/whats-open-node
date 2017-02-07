@@ -37,9 +37,9 @@ $(document).ready(function(){
 		geoSuccess: function(p){
 			var view = this;
 			console.log("Found user's location at " + p.coords.latitude + ", " + p.coords.longitude);
-			this.results = new ResultsCollection([], { latitude: p.coords.latitude, longitude: p.coords.longitude });
-			this.results.fetch().done(function(){
-				appEvents.trigger("app:loadResults")
+			var results = new ResultsCollection([], { latitude: p.coords.latitude, longitude: p.coords.longitude });
+			results.fetch().done(function(){
+				appEvents.trigger("app:loadResults", results);
 			});
 		},
 		geoError: function(p){
@@ -50,9 +50,9 @@ $(document).ready(function(){
 			
 			geoPosition.init && geoPosition.init() && geoPosition.getCurrentPosition(this.geoSuccess.bind(this), this.geoError.bind(this));
 			
-			this.listenTo(appEvents, "app:loadResults", function(){
+			this.listenTo(appEvents, "app:loadResults", function(results){
 				view.$("#subheading").css("display", "block"); //Display subheading
-				var resultsView = new ResultsView({ collection: view.results });
+				var resultsView = new ResultsView({ collection: results });
 			});
 		}
 	});
