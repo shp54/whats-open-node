@@ -51,7 +51,7 @@ let AppView = Backbone.View.extend({
 		alert("Couldn't find your location. We kind of need that");
 	},
 	initialize(){			
-		geoPosition.init && geoPosition.init() && geoPosition.getCurrentPosition(this.geoSuccess.bind(this), this.geoError.bind(this));
+		geoPosition.init && geoPosition.init() && geoPosition.getCurrentPosition((p) => this.geoSuccess(p), (p) => this.geoError(p));
 		
 		this.listenTo(appEvents, "app:loadResults", (results) => {
 			this.$("#subheading").css("display", "block"); //Display subheading
