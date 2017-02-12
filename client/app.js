@@ -1,0 +1,26 @@
+let Backbone = require('backbone'),
+	ResultsView = require('./results/results-view'),
+	ResultsCollection = require('./results/results-collection'),
+	appEvents = require('./events');
+	
+let AppView = Backbone.View.extend({
+	el: "body",
+	geoSuccess(p){
+		console.log(`Found user's location at ${p.coords.latitude}, ${p.coords.longitude}`);
+		let results = new ResultsCollection([], { latitude: p.coords.latitude, longitude: p.coords.longitude });
+		results.fetch().done(() => { appEvents.trigger("app:loadResults", results); });
+	},
+	geoError(p){
+		alert("Couldn't find your location. We kind of need that");
+	},
+	initialize(){			
+		geoPosition.init && geoPosition.init() && geoPosition.getCurrentPosition(this.geoSuccess.bind(this), this.geoError.bind(this));
+		
+		this.listenTo(appEvents, "app:loadResults", (results) => {
+			this.$("#subheading").css("display", "block"); //Display subheading
+			let resultsView = new ResultsView({ collection: results });
+		});
+	}
+});
+
+module.exports = AppView;
