@@ -8,27 +8,9 @@
 
 </head>
 <body>
-<!-- Load scripts, change to browserify later -->
 
-<script src="js/jquery-1.11.1.min.js"></script>
-<script src="js/underscore.js"></script>
-<script src="js/backbone.js"></script>
-<script src="js/handlebars.min.js"></script>
 <script src="js/geoPosition.js"></script>
-<script src="js/apiUtils.js"></script>
-<script src="js/main.js"></script>
-
-<script type="text/template" id="results-template">
-	<ul class='list-group'>
-		{{#each .}}
-		<li class='list-group-item'>
-			<h3>{{name}}</h3>
-			<span class='address'>{{vicinity}}</span>
-			<img src='{{icon}}' width='53' height='53'>
-		</li>
-		{{/each}}
-	</ul>
-</script>
+<script src="js/bundle.js"></script>
 
 <nav class="navbar navbar-default">
   <span class="navbar-brand">What's Open</span>
