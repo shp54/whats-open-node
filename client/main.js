@@ -2,7 +2,8 @@ let $ = require('jquery'),
 	Backbone = require('backbone'),
 	ResultsView = require('./results/results-view'),
 	ResultsCollection = require('./results/results-collection'),
-	appEvents = require('./events');
+	appEvents = require('./events'),
+	geoPosition = require('../lib/geoPosition');
 	
 let AppView = Backbone.View.extend({
 	el: "body",
