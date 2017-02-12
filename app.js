@@ -1,6 +1,6 @@
 let request = require('request'),
 	express = require('express'),
-	assign = require('object-assign'),
+	_ = require('underscore'),
 	apiParameters = require('./api/params'),
 	apiUtils = require('./api/utils');
 
@@ -16,7 +16,7 @@ app.get('/open', (req, res) => {
 	let longitude = req.query.long;
 	console.log("Request coming from coordinates %s, %s", latitude, longitude);
 	
-	let params = assign(apiParameters.params, { location: `${latitude},${longitude}` })//Add location to API parameters
+	let params = _.extend(apiParameters.params, { location: `${latitude},${longitude}` })//Add location to API parameters
 	let url = apiUtils.buildUrl(params);
 	request(url, (error, response, body) => {
 		if (!error && response.statusCode == 200) {
