@@ -18,6 +18,7 @@
   "scripts": {
     "start": "node app.js",
     "build": "browserify -t hbsfy client/main.js > assets/js/bundle.js",
+    "postinstall": "browserify -t hbsfy client/main.js > assets/js/bundle.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "engines": {
