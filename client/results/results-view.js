@@ -1,5 +1,4 @@
 let Backbone = require('backbone'),
-	Handlebars = require('Handlebars'),
 	resultsTemplate = require('../../templates/results.hbs');
 
 let ResultsView = Backbone.View.extend({
