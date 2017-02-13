@@ -1,11 +1,8 @@
-let apiUrl = require('./params').url; 
+let _ = require('underscore'),
+	apiUrl = require('./params').url; 
 
 function buildQueryString(params){
-	let result = [];
-	for(let p in params){
-		result.push(p + '=' + params[p]);
-	}
-	return result.join('&');
+	return _.chain(params).keys().inject((acc, item) => _.union(acc, [`${item}=${params[item]}`]), []).join("&").value();	
 }
 
 function buildUrl(params){

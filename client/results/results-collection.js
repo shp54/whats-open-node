@@ -1,5 +1,5 @@
 let Backbone = require('backbone'),
-	apiUtils = require('../../api/utils');;
+	apiUtils = require('../../api/utils');
 
 let ResultsCollection = Backbone.Collection.extend({
 	initialize(models, options){
