@@ -1,7 +1,9 @@
+let api_key =  'AIzaSyAsaKDM1E9cv45rSvphS8hv1X7eKtovbBg';
+
 module.exports = {		
-		url: 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?',
+		listUrl: 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?',
 		params: {
-			'key': 'AIzaSyAsaKDM1E9cv45rSvphS8hv1X7eKtovbBg',
+			'key': api_key,
 			'types': 'restaurant',
 			'rankby': 'distance',
 			'opennow': ''
