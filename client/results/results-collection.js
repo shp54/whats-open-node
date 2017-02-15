@@ -13,7 +13,7 @@ let ResultsCollection = Backbone.Collection.extend({
 		})}` 
 	},
 	parse(data){
-		return JSON.parse(data).results;
+		return data.results;
 	}
 });
 

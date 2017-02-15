@@ -36,7 +36,9 @@ app.get('/open', (req, res) => {
 	let url = apiParameters.listUrl + apiUtils.buildQueryString(params);
 	request(url, (error, response, body) => {
 		if (!error && response.statusCode == 200) {
-			res.json(body); //Send body back to client, let them deal with it
+			//Send body back to client, let them deal with it
+            res.setHeader('content-type', 'application/json'); 
+			res.send(body);
 		}
 	});
 });
