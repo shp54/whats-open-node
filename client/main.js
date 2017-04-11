@@ -18,6 +18,8 @@ let AppView = Backbone.View.extend({
 	initialize(){			
 		geoPosition.init && geoPosition.init() && geoPosition.getCurrentPosition((p) => this.geoSuccess(p), (p) => this.geoError(p));
 		
+		this.$el.html("<div id='spinner'><img src='/images/spinner.gif'></div>")
+		
 		this.listenTo(appEvents, "app:loadResults", (results) => {
 			this.$("#subheading").css("display", "block"); //Display subheading
 			let resultsView = new ResultsView({ collection: results });
