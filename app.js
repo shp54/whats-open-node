@@ -30,7 +30,7 @@ app.get('/', (req, res) => {
 app.get('/open', (req, res) => {
 	let latitude = req.query.lat;
 	let longitude = req.query.long;
-	console.log("Request coming from coordinates %s, %s", latitude, longitude);
+	console.log(`Request coming from coordinates ${latitude}, ${longitude}`);
 	
 	let params = _.extend(apiParameters.params, { location: `${latitude},${longitude}` }); //Add location to API parameters
 	let url = apiParameters.listUrl + apiUtils.buildQueryString(params);
