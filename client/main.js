@@ -8,8 +8,7 @@ let AppView = Backbone.View.extend({
 	el: "body",
 	geoSuccess(p){
 		console.log(`Found user's location at ${p.coords.latitude}, ${p.coords.longitude}`);
-		//store position and poll loadResults repeatedly if position is gotten
-		this.loadResults(p.coords.latitude, p.coords.longitude)
+		this.loadResults(p.coords.latitude, p.coords.longitude) //store position and poll loadResults repeatedly if position is gotten
 		setTimeout(() => {
 			this.loadResults(p.coords.latitude, p.coords.longitude)
 		}, 60000); 
@@ -36,6 +35,4 @@ function init(){
 	let app = new AppView(); //Kickstart the app
 }
 
-$(document).ready(function(){	
-	init();
-});
+$(() => { init() }); //Here we go!

@@ -1,15 +1,17 @@
 let Backbone = require('backbone'),
-	resultsTemplate = require('../../templates/results.hbs');
+	ResultView = require('./result-view')
 
 let ResultsView = Backbone.View.extend({
 	el: "#results",
-	template: resultsTemplate,
 	initialize(options){
 		this.listenTo(this.collection, "change", this.render);
 		this.render();
 	},
 	render(){
-		this.$el.html(this.template(this.collection.toJSON()));
+		this.$el.html("<ul class='list-group'></ul>");
+		this.collection.each((model) => {
+			this.$("ul").append(new ResultView({model: model}).render().$el);
+		});
 		return this;
 	}
 });
