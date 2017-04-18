@@ -1,8 +1,7 @@
 let Backbone = require('backbone'),
 	$ = require('jquery'),
 	_ = require('underscore'),
-	moment = require('moment'),
-	apiParams = require('../../api/params')
+	moment = require('moment')
 
 let ResultModel = Backbone.Model.extend({
 	idAttribute: "place_id",
