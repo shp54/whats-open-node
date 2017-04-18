@@ -28,20 +28,29 @@ app.get('/', (req, res) => {
 });
 
 app.get('/open', (req, res) => {
-	let latitude = req.query.lat;
-	let longitude = req.query.long;
-	console.log(`Request coming from coordinates ${latitude}, ${longitude}`);
+	let { lat, long } = req.query
+	console.log(`Request coming from coordinates ${lat}, ${long}`);
 	
-	let params = _.extend(apiParameters.params, { location: `${latitude},${longitude}` }); //Add location to API parameters
+	let params = _.extend(apiParameters.params, { location: `${lat},${long}` }); //Add location to API parameters
 	let url = apiParameters.listUrl + apiUtils.buildQueryString(params);
 	request(url, (error, response, body) => {
-		if (!error && response.statusCode == 200) {
-			//Send body back to client, let them deal with it
+		if (!error && response.statusCode == 200) { //Send body back to client, let them deal with it
 			res.setHeader('content-type', 'application/json'); 
 			res.send(body);
 		}
 	});
 });
+
+app.get('/place/:placeId', (req, res) => {
+	let placeid = req.params.placeId;
+	let url = apiParameters.placeUrl + apiUtils.buildQueryString({ placeid, key: apiParameters.apiKey })
+	request(url, (error, response, body) => {
+		if (!error && response.statusCode == 200) { //Send body back to client, let them deal with it
+			res.setHeader('content-type', 'application/json'); 
+			res.send(body);
+		}
+	})
+})
 
 let server = app.listen(process.env.PORT || 3000, () => {
 	let port = server.address().port;
