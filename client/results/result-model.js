@@ -25,6 +25,7 @@ let ResultModel = Backbone.Model.extend({
 					this.set('closingTime', moment(hoursToday.close.time, 'HH').format('LT'))
 				}
 			}
+			this.set('placeUrl', result.url)
 		})
 	}
 });
