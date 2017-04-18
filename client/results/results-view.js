@@ -10,7 +10,7 @@ let ResultsView = Backbone.View.extend({
 	render(){
 		this.$el.html("<ul class='list-group'></ul>");
 		this.collection.each((model) => {
-			this.$("ul").append(new ResultView({model: model}).render().$el);
+			this.$("ul").append(new ResultView({ model }).render().$el);
 		});
 		return this;
 	}

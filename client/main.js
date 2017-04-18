@@ -7,17 +7,18 @@ let $ = require('jquery'),
 let AppView = Backbone.View.extend({
 	el: "body",
 	geoSuccess(p){
-		console.log(`Found user's location at ${p.coords.latitude}, ${p.coords.longitude}`);
-		this.loadResults(p.coords.latitude, p.coords.longitude) //store position and poll loadResults repeatedly if position is gotten
+		let { latitude, longitude } = p.coords;
+		console.log(`Found user's location at ${latitude}, ${longitude}`); //store position and poll loadResults repeatedly if position is gotten
+		this.loadResults(latitude, longitude)
 		setTimeout(() => {
-			this.loadResults(p.coords.latitude, p.coords.longitude)
+			this.loadResults(latitude, longitude)
 		}, 60000); 
 	},
 	geoError(p){
 		alert("Couldn't find your location. We kind of need that");
 	},
 	loadResults(latitude, longitude){
-		let results = new ResultsCollection([], { latitude: latitude, longitude: longitude });
+		let results = new ResultsCollection([], { latitude, longitude });
 		results.fetch().done(() => { Backbone.trigger("app:loadResults", results); });
 	},
 	initialize(){		
