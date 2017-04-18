@@ -42,8 +42,7 @@ app.get('/open', (req, res) => {
 });
 
 app.get('/place/:placeId', (req, res) => {
-	let placeid = req.params.placeId;
-	let url = apiParameters.placeUrl + apiUtils.buildQueryString({ placeid, key: apiParameters.apiKey })
+	let url = apiParameters.placeUrl + apiUtils.buildQueryString({ placeid: req.params.placeId, key: apiParameters.apiKey })
 	request(url, (error, response, body) => {
 		if (!error && response.statusCode == 200) { //Send body back to client, let them deal with it
 			res.setHeader('content-type', 'application/json'); 
