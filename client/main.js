@@ -14,21 +14,27 @@ let AppView = Backbone.View.extend({
 			this.loadResults(latitude, longitude)
 		}, 60000); 
 	},
+	results: new ResultsCollection(),
 	geoError(p){
 		alert("Couldn't find your location. We kind of need that");
 	},
 	loadResults(latitude, longitude){
-		let results = new ResultsCollection([], { latitude, longitude });
-		results.fetch().done(() => { Backbone.trigger("app:loadResults", results); });
+		if(!this.results.latitude){
+			this.results.latitude = latitude;
+		}
+		if(!this.results.longitude){
+			this.results.longitude = longitude;
+		}
+		this.results.fetch() //Fetch automatically "smart updates" the collection, so it will always correctly rerender when something gets added or removed
 	},
 	initialize(){		
 		geoPosition.init && geoPosition.init() && geoPosition.getCurrentPosition((p) => this.geoSuccess(p), (p) => this.geoError(p));
 		this.$("#spinner").show();
-		this.listenTo(Backbone, "app:loadResults", (results) => {
+		this.listenTo(this.results, "sync", () => {
 			this.$("#spinner").hide();
 			this.$("#subheading").css("display", "block"); //Display subheading
-			let resultsView = new ResultsView({ collection: results });
 		});
+		let resultsView = new ResultsView({ collection: this.results });
 	}
 });
 	
