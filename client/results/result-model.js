@@ -3,9 +3,7 @@ let Backbone = require('backbone'),
 
 let ResultModel = Backbone.Model.extend({
 	idAttribute: "place_id",
-	url(){
-		return `/place/${this.id}`
-	},
+	urlRoot: "/place",
 	initialize(){
 		this.fetch()
 	},
