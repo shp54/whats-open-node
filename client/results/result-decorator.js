@@ -21,7 +21,7 @@ let ResultDecorator = {
 			return _.find(periods, (p) => p.open.day == weekday)
 		}
 	},
-	getOpeningHours(data){
+	getOpeningHours(){
 		if(this.data.result && this.data.result.opening_hours){ //Get opening hours for current weekday
 			let result = this.data.result
 			let currentWeekday = moment().day()
