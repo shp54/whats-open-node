@@ -10,7 +10,7 @@ let ResultModel = Backbone.Model.extend({
 		this.fetch()
 	},
 	toJSON(){
-		return ResultDecorator.decorate(this.attributes) //Decorate the default JSON with extra data
+		return ResultDecorator.initialize(this.attributes).decorate() //Decorate the default JSON with extra data
 	}
 });
 
