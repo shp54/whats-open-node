@@ -39,7 +39,7 @@ let AppView = Backbone.View.extend({
 });
 	
 function init(){
-	window.app = new AppView(); //Kickstart the app
+	let app = new AppView(); //Kickstart the app
 }
 
 $(() => { init() }); //Here we go!
