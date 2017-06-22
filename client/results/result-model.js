@@ -16,7 +16,7 @@ let ResultModel = Backbone.Model.extend({
 		}
 	},
 	initialize(){ 
-		$.get(this.url()).then((data) => { //Get closing time and other info
+		/*$.get(this.url()).then((data) => { //Get closing time and other info
 			let result = data.result
 			if(result && result.opening_hours){
 				let currentWeekday = moment().day()
@@ -26,7 +26,27 @@ let ResultModel = Backbone.Model.extend({
 				}
 			}
 			this.set('placeUrl', result.url)
-		})
+		})*/
+		this.fetch()
+	},
+	toJSON(){
+		let data = _.clone(this.attributes)
+		
+		//Decorate the default JSON with extra data
+		let decs = {};
+		if(data.result){
+			decs.placeUrl = data.result.url;
+			if(data.result.opening_hours){
+				let currentWeekday = moment().day()
+				let hoursToday = this.getHoursForWeekday(data.result.opening_hours.periods, currentWeekday)
+				if(hoursToday.close){
+					decs.closingTime = moment(hoursToday.close.time, 'HH').format('LT')
+				}
+			}
+		}
+		
+		let json = _.extend(data, decs)
+		return json
 	}
 });
 
