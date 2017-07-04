@@ -1,4 +1,5 @@
-let request = require('request'),
+let Promise = require('bluebird')
+	request = Promise.promisify(require('request')),
 	express = require('express'),
 	memjs = require('memjs'),
 	_ = require('underscore'),
@@ -7,7 +8,7 @@ let request = require('request'),
 	
 let env = process.env.NODE_ENV || 'development';
 
-let cache = memjs.Client.create()
+let cache = Promise.promisifyAll(memjs.Client.create())
 
 let app = express();
 
@@ -34,44 +35,46 @@ app.get('/open', (req, res) => {
 	let { lat, long } = req.query
 	let location = `${lat},${long}` 
 	let params = _.extend(apiParameters.params, { location }); //Add location to API parameters
-	let url = apiParameters.listUrl + apiUtils.buildQueryString(params);
-	
-	console.log(`Request coming from coordinates ${lat}, ${long}`);
-	
-	cache.get(location, (err, val) => {
-		if(!err && val){
-			res.setHeader('content-type', 'application/json'); 
-			res.send(val.toString());
+	let apiUrl = apiParameters.listUrl + apiUtils.buildQueryString(params);
+		
+	cache.getAsync(location).then((val) => {
+		if(val){
+			console.log(`Request coming from coordinates ${lat}, ${long} - cache hit`);
+			return Promise.resolve(val.toString());
 		} else {
-			request(apiUrl, (error, response, body) => {
-				if (!error && response.statusCode == 200) { //Send body back to client, let them deal with it
-					cache.set(location, body, {expires: 60}, (err, val) => {}) //Store it in cache for later (expire it in one minute so it refreshes)
- 					res.setHeader('content-type', 'application/json'); 
-					res.send(body);
+			console.log(`Request coming from coordinates ${lat}, ${long} - cache miss`);
+			return request(apiUrl).then((response) => {
+				if (response.statusCode == 200) { //Send body back to client, let them deal with it
+					cache.setAsync(location, response.body, {expires: 60}); //Store it in cache for later (expire it in one minute so it refreshes)
+					return response.body;
 				}
-			});
+			})
 		}
-	});	
+	}).then((body) => {
+		res.setHeader('content-type', 'application/json'); 
+		res.send(body);	
+	})
 });
 
 app.get('/place/:placeId', (req, res) => {
 	let placeid = req.params.placeId
 	let apiUrl = apiParameters.placeUrl + apiUtils.buildQueryString({ placeid, key: apiParameters.apiKey })
 	
-	cache.get(placeid, (err, val) => {
-		if(!err && val){
-			res.setHeader('content-type', 'application/json'); 
-			res.send(val.toString());			
+	cache.getAsync(placeid).then((val) => {
+		if(val){
+			return Promise.resolve(val.toString())
 		} else {
-			request(apiUrl, (error, response, body) => {
-				if (!error && response.statusCode == 200) { //Send body back to client, let them deal with it
-					cache.set(placeid, body, {}, (err, val) => {});
-					res.setHeader('content-type', 'application/json'); 
-					res.send(body);
+			request(apiUrl).then((response) => {
+				if (response.statusCode == 200) { //Send body back to client, let them deal with it
+					cache.setAsync(placeid, response.body, {});
+					return response.body;
 				}
-			});
-		}
-	});
+			})
+		}	
+	}).then((body) => {
+		res.setHeader('content-type', 'application/json'); 
+		res.send(body);
+	})
 });
 
 let server = app.listen(process.env.PORT || 3000, () => {
