@@ -1,10 +1,13 @@
 let request = require('request'),
 	express = require('express'),
+	memjs = require('memjs'),
 	_ = require('underscore'),
 	apiParameters = require('./api/params'),
 	apiUtils = require('./api/utils');
 	
 let env = process.env.NODE_ENV || 'development';
+
+let cache = memjs.Client.create()
 
 let app = express();
 
@@ -29,27 +32,47 @@ app.get('/', (req, res) => {
 
 app.get('/open', (req, res) => {
 	let { lat, long } = req.query
+	let location = `${lat},${long}` 
+	let params = _.extend(apiParameters.params, { location }); //Add location to API parameters
+	let url = apiParameters.listUrl + apiUtils.buildQueryString(params);
+	
 	console.log(`Request coming from coordinates ${lat}, ${long}`);
 	
-	let params = _.extend(apiParameters.params, { location: `${lat},${long}` }); //Add location to API parameters
-	let url = apiParameters.listUrl + apiUtils.buildQueryString(params);
-	request(url, (error, response, body) => {
-		if (!error && response.statusCode == 200) { //Send body back to client, let them deal with it
+	cache.get(location, (err, val) => {
+		if(!err && val){
 			res.setHeader('content-type', 'application/json'); 
-			res.send(body);
+			res.send(val.toString());
+		} else {
+			request(apiUrl, (error, response, body) => {
+				if (!error && response.statusCode == 200) { //Send body back to client, let them deal with it
+					cache.set(location, body, {expires: 60}, (err, val) => {}) //Store it in cache for later (expire it in one minute so it refreshes)
+ 					res.setHeader('content-type', 'application/json'); 
+					res.send(body);
+				}
+			});
 		}
-	});
+	});	
 });
 
 app.get('/place/:placeId', (req, res) => {
-	let url = apiParameters.placeUrl + apiUtils.buildQueryString({ placeid: req.params.placeId, key: apiParameters.apiKey })
-	request(url, (error, response, body) => {
-		if (!error && response.statusCode == 200) { //Send body back to client, let them deal with it
+	let placeid = req.params.placeId
+	let apiUrl = apiParameters.placeUrl + apiUtils.buildQueryString({ placeid, key: apiParameters.apiKey })
+	
+	cache.get(placeid, (err, val) => {
+		if(!err && val){
 			res.setHeader('content-type', 'application/json'); 
-			res.send(body);
+			res.send(val.toString());			
+		} else {
+			request(apiUrl, (error, response, body) => {
+				if (!error && response.statusCode == 200) { //Send body back to client, let them deal with it
+					cache.set(placeid, body, {}, (err, val) => {});
+					res.setHeader('content-type', 'application/json'); 
+					res.send(body);
+				}
+			});
 		}
-	})
-})
+	});
+});
 
 let server = app.listen(process.env.PORT || 3000, () => {
 	let port = server.address().port;
