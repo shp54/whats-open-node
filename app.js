@@ -45,7 +45,7 @@ app.get('/open', (req, res) => {
 			console.log(`Request coming from coordinates ${lat}, ${long} - cache miss`);
 			return request(apiUrl).then((response) => {
 				if (response.statusCode == 200) { //Send body back to client, let them deal with it
-					cache.setAsync(location, response.body, {expires: 60}); //Store it in cache for later (expire it in one minute so it refreshes)
+					cache.set(location, response.body, {expires: 60}) //Store it in cache for later (expire it in one minute so it refreshes)
 					return response.body;
 				}
 			})
@@ -66,7 +66,7 @@ app.get('/place/:placeId', (req, res) => {
 		} else {
 			request(apiUrl).then((response) => {
 				if (response.statusCode == 200) { //Send body back to client, let them deal with it
-					cache.setAsync(placeid, response.body, {});
+					cache.set(placeid, response.body, {});
 					return response.body;
 				}
 			})
