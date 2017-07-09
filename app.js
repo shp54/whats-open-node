@@ -5,7 +5,7 @@ let Promise = require('bluebird')
 	_ = require('underscore'),
 	apiParameters = require('./api/params'),
 	apiUtils = require('./api/utils');
-	
+
 let env = process.env.NODE_ENV || 'development';
 
 let cache = Promise.promisifyAll(memjs.Client.create())
