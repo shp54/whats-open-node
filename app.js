@@ -1,5 +1,4 @@
-let Promise = require('bluebird')
-	request = Promise.promisify(require('request')),
+let request = require('request'),
 	express = require('express'),
 	memjs = require('memjs'),
 	_ = require('underscore'),
