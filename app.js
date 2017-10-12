@@ -8,7 +8,7 @@ let Promise = require('bluebird')
 
 let env = process.env.NODE_ENV || 'development';
 
-let cache = Promise.promisifyAll(memjs.Client.create())
+let cache = memjs.Client.create()
 
 let app = express();
 
@@ -57,22 +57,21 @@ app.get('/place/:placeId', (req, res) => {
 	let placeid = req.params.placeId
 	let apiUrl = apiParameters.placeUrl + apiUtils.buildQueryString({ placeid, key: apiParameters.apiKey })
 	
-	cache.getAsync(placeid).then((val) => {
-		if(val){
-			return Promise.resolve(val.toString())
+	cache.get(placeid, (err, val) => {
+		if(!err && val){
+			res.setHeader('content-type', 'application/json'); 
+			res.send(val.toString());			
 		} else {
-			request(apiUrl).then((response) => {
-				if (response.statusCode == 200) { //Send body back to client, let them deal with it
-					cache.set(placeid, response.body, {});
-					return response.body;
+			request(apiUrl, (error, response, body) => {
+				if (!error && response.statusCode == 200) { //Send body back to client, let them deal with it
+					cache.set(placeid, body, {}, (err, val) => {});
+					res.setHeader('content-type', 'application/json'); 
+					res.send(body);
 				}
-			})
-		}	
-	}).then((body) => {
-		res.setHeader('content-type', 'application/json'); 
-		res.send(body);
-	})
-})
+			});
+		}
+	});
+});
 
 let server = app.listen(process.env.PORT || 3000, () => {
 	let port = server.address().port;
