@@ -37,18 +37,10 @@ app.get('/open', (req, res) => {
 	let params = _.extend(apiParameters.params, { location }); //Add location to API parameters
 	let apiUrl = apiParameters.listUrl + apiUtils.buildQueryString(params);
 		
-	cache.getAsync(location).then((val) => {
-		if(val){
-			console.log(`Request coming from coordinates ${lat}, ${long} - cache hit`);
-			return Promise.resolve(val.toString());
-		} else {
-			console.log(`Request coming from coordinates ${lat}, ${long} - cache miss`);
-			return request(apiUrl).then((response) => {
-				if (response.statusCode == 200) { //Send body back to client, let them deal with it
-					cache.set(location, response.body, {expires: 60}) //Store it in cache for later (expire it in one minute so it refreshes)
-					return response.body;
-				}
-			})
+	request(apiUrl, (error, response, body) => {
+		if (!error && response.statusCode == 200) { //Send body back to client, let them deal with it
+			res.setHeader('content-type', 'application/json'); 
+			res.send(body);
 		}
 	});
 });
