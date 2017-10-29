@@ -1,9 +1,8 @@
-let request = require('request'),
+let request = require('request-promise'),
 	express = require('express'),
 	memjs = require('memjs'),
 	_ = require('underscore'),
-	apiParameters = require('./api/params'),
-	apiUtils = require('./api/utils');
+	apiParameters = require('./api/params')
 
 let env = process.env.NODE_ENV || 'development';
 
@@ -32,34 +31,35 @@ app.get('/', (req, res) => {
 
 app.get('/open', (req, res) => {
 	let { lat, long } = req.query
-	let location = `${lat},${long}` 
-	let params = _.extend(apiParameters.params, { location }); //Add location to API parameters
-	let apiUrl = apiParameters.listUrl + apiUtils.buildQueryString(params);
 		
-	request(apiUrl, (error, response, body) => {
-		if (!error && response.statusCode == 200) { //Send body back to client, let them deal with it
+	request({ 
+    url: apiParameters.listUrl,
+    qs: _.extend(apiParameters.params, { location: `${lat},${long}` })
+  }).then((response) => {
 			res.setHeader('content-type', 'application/json'); 
-			res.send(body);
-		}
-	});
+			res.send(response);
+  });
 });
 
 app.get('/place/:placeId', (req, res) => {
 	let placeid = req.params.placeId
-	let apiUrl = apiParameters.placeUrl + apiUtils.buildQueryString({ placeid, key: apiParameters.apiKey })
 	
 	cache.get(placeid, (err, val) => {
 		if(!err && val){
 			res.setHeader('content-type', 'application/json'); 
 			res.send(val.toString());			
 		} else {
-			request(apiUrl, (error, response, body) => {
-				if (!error && response.statusCode == 200) { //Send body back to client, let them deal with it
-					cache.set(placeid, body, {}, (err, val) => {});
-					res.setHeader('content-type', 'application/json'); 
-					res.send(body);
-				}
-			});
+			request({ 
+        uri: apiParameters.placeUrl,
+        qs: {
+          placeid,
+          key: apiParameters.apiKey
+        }
+      }).then((response) => {
+					cache.set(placeid, response, {}, (err, val) => {});
+          res.setHeader('content-type', 'application/json'); 
+          res.send(response);
+      });
 		}
 	});
 });
