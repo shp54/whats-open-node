@@ -60,7 +60,7 @@ app.get('/place/:placeId', (req, res) => {
       return val.toString()
     } else {
       return request(options).then((response) => {
-          cacheSet(placeid, response, {});
+          cacheSet(placeid, response, {}).then((val) => val.toString());
       });
     }
   }).then((response) => {
