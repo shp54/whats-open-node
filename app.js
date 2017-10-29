@@ -2,11 +2,14 @@ let request = require('request-promise'),
 	express = require('express'),
 	memjs = require('memjs'),
 	_ = require('underscore'),
+  Promise = require('bluebird'),
 	apiParameters = require('./api/params')
 
 let env = process.env.NODE_ENV || 'development';
 
-let cache = memjs.Client.create()
+let cache = memjs.Client.create(),
+    cacheSet = Promise.promisify(cache.set, {context: cache}),
+    cacheGet = Promise.promisify(cache.get, {context: cache})
 
 let app = express();
 
@@ -30,38 +33,40 @@ app.get('/', (req, res) => {
 });
 
 app.get('/open', (req, res) => {
-	let { lat, long } = req.query
+	let { lat, long } = req.query,
+      options = { 
+        url: apiParameters.listUrl,
+        qs: _.extend(apiParameters.params, { location: `${lat},${long}` })
+      }
 		
-	request({ 
-    url: apiParameters.listUrl,
-    qs: _.extend(apiParameters.params, { location: `${lat},${long}` })
-  }).then((response) => {
+	request(options).then((response) => {
 			res.setHeader('content-type', 'application/json'); 
 			res.send(response);
   });
 });
 
 app.get('/place/:placeId', (req, res) => {
-	let placeid = req.params.placeId
-	
-	cache.get(placeid, (err, val) => {
-		if(!err && val){
-			res.setHeader('content-type', 'application/json'); 
-			res.send(val.toString());			
-		} else {
-			request({ 
+	let placeid = req.params.placeId,
+      options = { 
         uri: apiParameters.placeUrl,
         qs: {
           placeid,
           key: apiParameters.apiKey
         }
-      }).then((response) => {
-					cache.set(placeid, response, {}, (err, val) => {});
-          res.setHeader('content-type', 'application/json'); 
-          res.send(response);
+      }
+	
+	cacheGet(placeid).then((val) => {
+		if(val){
+      return val.toString()
+		} else {
+			return request(options).then((response) => {
+					cacheSet(placeid, response, {});
       });
-		}
-	});
+    }
+  }).then((response) => {
+      res.setHeader('content-type', 'application/json'); 
+			res.send(response);		
+  });
 });
 
 let server = app.listen(process.env.PORT || 3000, () => {
