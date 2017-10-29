@@ -8,7 +8,7 @@ let ResultsCollection = Backbone.Collection.extend({
 		this.longitude = options && options.longitude; 
 	},
 	url(){
-		return `/open?$lat=${this.latitude}&long=${this.longitude}` 
+		return `/open?lat=${this.latitude}&long=${this.longitude}` 
 	},
 	parse(data){
 		return data.results;
