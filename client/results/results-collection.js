@@ -1,7 +1,6 @@
 let Backbone = require('backbone'),
-	ResultModel = require('./result-model'),
-	apiUtils = require('../../api/utils');
-
+	ResultModel = require('./result-model')
+  
 let ResultsCollection = Backbone.Collection.extend({
 	model: ResultModel,
 	initialize(models, options){
@@ -9,10 +8,7 @@ let ResultsCollection = Backbone.Collection.extend({
 		this.longitude = options && options.longitude; 
 	},
 	url(){
-		return `/open?${apiUtils.buildQueryString({
-			"lat": this.latitude,
-			"long": this.longitude
-		})}` 
+		return `/open?$lat=${this.latitude}&long=${this.longitude}` 
 	},
 	parse(data){
 		return data.results;
