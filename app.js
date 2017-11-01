@@ -59,9 +59,7 @@ app.get('/place/:placeId', (req, res) => {
     if(val){
       return val.toString()
     } else {
-      return request(options).then((response) => {
-          cacheSet(placeid, response, {}).then((val) => val.toString());
-      });
+      return request(options).then((response) => cacheSet(placeid, response, {}).then((val) => val.toString()));
     }
   }).then((response) => {
     res.setHeader('content-type', 'application/json'); 
