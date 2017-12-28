@@ -1,7 +1,7 @@
-let fetch = require('node-fetch'),
-    querystring = require('querystring'),
+let request = require('request-promise'),
     express = require('express'),
     memjs = require('memjs'),
+    _ = require('underscore'),
     Promise = require('bluebird'),
     apiParameters = require('./api/params')
 
@@ -34,14 +34,12 @@ app.get('/', (req, res) => {
 
 app.get('/open', (req, res) => {
   let { lat, long } = req.query,
-      qs = querystring.stringify({ 
-	key: apiParameters.apiKey, 
-	location: `${lat},${long}`
-      });
+      options = { 
+        url: apiParameters.listUrl,
+        qs: _.extend(apiParameters.params, { location: `${lat},${long}` })
+      }
     
-  fetch(apiParameters.listUrl)
-  .then(result => result.json())
-  .then(response => {
+  request(options).then((response) => {
     res.setHeader('content-type', 'application/json'); 
     res.send(response);
   });
@@ -49,24 +47,24 @@ app.get('/open', (req, res) => {
 
 app.get('/place/:placeId', (req, res) => {
   let placeid = req.params.placeId,
-      qs = querystring.stringify({
+      options = { 
+        uri: apiParameters.placeUrl,
+        qs: {
           placeid,
           key: apiParameters.apiKey
         }
-      });
+      }
 
   cacheGet(placeid).then((val) => {
     if(val){
       return val.toString()
     } else {
-      return fetch(apiParameters.placeUrl + '?' + qs)
-      .then(result => result.json()) 
-      .then(response => {
+      return request(options).then((response) => {
         cacheSet(placeid, response, {})
         return response
       });
     }
-  }).then(response => {
+  }).then((response) => {
     res.setHeader('content-type', 'application/json'); 
     res.send(response);		
   });
