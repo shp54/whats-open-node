@@ -51,8 +51,7 @@ app.get('/place/:placeId', (req, res) => {
   let placeid = req.params.placeId,
       qs = querystring.stringify({
           placeid,
-          key: apiParameters.apiKey
-        }
+          key: apiParameters.apiKey,
       });
 
   cacheGet(placeid).then((val) => {
