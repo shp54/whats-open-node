@@ -1,4 +1,5 @@
-let request = require('request-promise'),
+let fetch = require('node-fetch'),
+    querystring = require('querystring'),
     express = require('express'),
     memjs = require('memjs'),
     _ = require('underscore'),
@@ -10,6 +11,8 @@ let env = process.env.NODE_ENV || 'development';
 let cache = memjs.Client.create(),
     cacheSet = Promise.promisify(cache.set, {context: cache}),
     cacheGet = Promise.promisify(cache.get, {context: cache})
+
+const makeUrl = (url, paramsObj) => url + '?' + querystring.stringify(paramsObj);
 
 let app = express();
 
@@ -34,12 +37,17 @@ app.get('/', (req, res) => {
 
 app.get('/open', (req, res) => {
   let { lat, long } = req.query,
-      options = { 
-        url: apiParameters.listUrl,
-        qs: _.extend(apiParameters.params, { location: `${lat},${long}` })
-      }
+      qs = { 
+	key: apiParameters.apiKey, 
+	location: `${lat},${long}`,
+	type: 'restaurant',
+	rankby: 'distance',
+	opennow: 'true',
+      };
     
-  request(options).then((response) => {
+  fetch(makeUrl(apiParameters.listUrl, qs))
+  .then(result => result.json())
+  .then(response => {
     res.setHeader('content-type', 'application/json'); 
     res.send(response);
   });
@@ -47,24 +55,23 @@ app.get('/open', (req, res) => {
 
 app.get('/place/:placeId', (req, res) => {
   let placeid = req.params.placeId,
-      options = { 
-        uri: apiParameters.placeUrl,
-        qs: {
+      qs = {
           placeid,
-          key: apiParameters.apiKey
-        }
-      }
+          key: apiParameters.apiKey,
+      };
 
   cacheGet(placeid).then((val) => {
     if(val){
       return val.toString()
     } else {
-      return request(options).then((response) => {
+      return fetch(makeUrl(apiParameters.placeUrl, qs))
+      .then(result => result.json()) 
+      .then(response => {
         cacheSet(placeid, response, {})
         return response
       });
     }
-  }).then((response) => {
+  }).then(response => {
     res.setHeader('content-type', 'application/json'); 
     res.send(response);		
   });
