@@ -36,10 +36,15 @@ app.get('/open', (req, res) => {
   let { lat, long } = req.query,
       qs = querystring.stringify({ 
 	key: apiParameters.apiKey, 
-	location: `${lat},${long}`
+	location: `${lat},${long}`,
+	type: 'restaurant',
+	rankby: 'distance',
+	opennow: 'true',
       });
+
+  console.log(apiParameters.listUrl + qs)
     
-  fetch(apiParameters.listUrl)
+  fetch(apiParameters.listUrl + qs)
   .then(result => result.json())
   .then(response => {
     res.setHeader('content-type', 'application/json'); 
@@ -58,7 +63,7 @@ app.get('/place/:placeId', (req, res) => {
     if(val){
       return val.toString()
     } else {
-      return fetch(apiParameters.placeUrl + '?' + qs)
+      return fetch(apiParameters.placeUrl + qs)
       .then(result => result.json()) 
       .then(response => {
         cacheSet(placeid, response, {})
