@@ -60,18 +60,20 @@ app.get('/place/:placeId', (req, res) => {
           key: apiParameters.apiKey,
       };
 
+  const fetchPlace = fetch(makeUrl(apiParameters.placeUrl, qs))
+			  .then(result => result.json());
+
   cacheGet(placeid).then((val) => {
     if(val){
       return val.toString()
     } else {
-      return fetch(makeUrl(apiParameters.placeUrl, qs))
-      .then(result => result.json()) 
-      .then(response => {
+      return fetchPlace.then(response => {
         cacheSet(placeid, response, {})
         return response
       });
     }
-  }).then(response => {
+  }).catch(err => fetchPlace)
+  .then(response => {
     res.setHeader('content-type', 'application/json'); 
     res.send(response);		
   });
