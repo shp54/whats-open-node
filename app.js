@@ -2,7 +2,6 @@ let fetch = require('node-fetch'),
     querystring = require('querystring'),
     express = require('express'),
     memjs = require('memjs'),
-    _ = require('underscore'),
     Promise = require('bluebird'),
     apiParameters = require('./api/params')
 
