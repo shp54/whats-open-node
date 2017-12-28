@@ -11,6 +11,8 @@ let cache = memjs.Client.create(),
     cacheSet = Promise.promisify(cache.set, {context: cache}),
     cacheGet = Promise.promisify(cache.get, {context: cache})
 
+const makeUrl = (url, paramsObj) => url + '?' + querystring.stringify(paramsObj);
+
 let app = express();
 
 //Taken from http://stackoverflow.com/questions/7185074/heroku-nodejs-http-to-https-ssl-forced-redirect 
@@ -34,17 +36,15 @@ app.get('/', (req, res) => {
 
 app.get('/open', (req, res) => {
   let { lat, long } = req.query,
-      qs = querystring.stringify({ 
+      qs = { 
 	key: apiParameters.apiKey, 
 	location: `${lat},${long}`,
 	type: 'restaurant',
 	rankby: 'distance',
 	opennow: 'true',
-      });
-
-  console.log(apiParameters.listUrl + qs)
+      };
     
-  fetch(apiParameters.listUrl + qs)
+  fetch(makeUrl(apiParameters.listUrl, qs))
   .then(result => result.json())
   .then(response => {
     res.setHeader('content-type', 'application/json'); 
@@ -54,16 +54,16 @@ app.get('/open', (req, res) => {
 
 app.get('/place/:placeId', (req, res) => {
   let placeid = req.params.placeId,
-      qs = querystring.stringify({
+      qs = {
           placeid,
           key: apiParameters.apiKey,
-      });
+      };
 
   cacheGet(placeid).then((val) => {
     if(val){
       return val.toString()
     } else {
-      return fetch(apiParameters.placeUrl + qs)
+      return fetch(makeUrl(apiParameters.placeUrl, qs))
       .then(result => result.json()) 
       .then(response => {
         cacheSet(placeid, response, {})
