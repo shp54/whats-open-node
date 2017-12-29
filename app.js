@@ -51,12 +51,13 @@ server.route({
     const fetchPlace = fetch(makeUrl(apiParameters.placeUrl, qs)).then(result => result.json());
 
     try {
-      const val = cacheGet(placeid);
+      const val = await cacheGet(placeid);
       if(val) {
         return JSON.parse(val.toString());
       } else {
         const response = await fetchPlace;
-        await cacheSet(placeid, JSON.stringify(response), {});
+        await cacheSet(placeid, JSON.stringi
+          fy(response), {});
         return response;
       }
     } catch(err) {
