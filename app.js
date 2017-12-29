@@ -15,7 +15,7 @@ const cacheGet = Promise.promisify(cache.get, {context: cache});
 const makeUrl = (url, paramsObj) => url + '?' + querystring.stringify(paramsObj);
 
 const server = hapi.server({
-  port: 3000,
+  port: process.env.PORT || 3000,
 });
 
 const startServer = async () => {
@@ -80,7 +80,7 @@ const startServer = async () => {
   });
 
   await server.start();
-  console.log('Server started on port 3000!');
+  console.log(`Server started on port ${server.info.port}!`);
 };
 
 startServer();
