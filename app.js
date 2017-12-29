@@ -56,8 +56,7 @@ server.route({
         return JSON.parse(val.toString());
       } else {
         const response = await fetchPlace;
-        await cacheSet(placeid, JSON.stringi
-          fy(response), {});
+        await cacheSet(placeid, JSON.stringify(response), {});
         return response;
       }
     } catch(err) {
