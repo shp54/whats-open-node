@@ -32,5 +32,5 @@ const main = app(state, actions, view, document.body);
 geoPosition.init();
 geoPosition.getCurrentPosition(p => {
   main.setLocation(p.coords);
-  main.fetchData();
+  setTimeout(() => main.fetchData(), 60000);
 }, p => console.log('Error :('));
