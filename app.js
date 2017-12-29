@@ -18,56 +18,57 @@ const server = hapi.server({
   port: process.env.PORT || 3000,
 });
 
+server.route({
+  method: 'GET',
+  path: '/open',
+  handler: (request, h) => {
+    const { lat, long } = request.query;
+    const location = `${lat},${long}`;
+    const qs = {
+      key: apiParameters.apiKey,
+      location,
+      type: 'restaurant',
+      rankby: 'distance',
+      opennow: 'true',
+    };
+
+    console.log(`Request sent from ${location}`);
+
+    return fetch(makeUrl(apiParameters.listUrl, qs)).then(result => result.json());
+  },
+});
+
+server.route({
+  method: 'GET',
+  path: '/place/{placeid}',
+  handler: async (request, h) => {
+    const { placeid } = request.params;
+    const qs = {
+        placeid,
+        key: apiParameters.apiKey,
+    };
+
+    const fetchPlace = fetch(makeUrl(apiParameters.placeUrl, qs)).then(result => result.json());
+
+    try {
+      const val = cacheGet(placeid);
+      if(val) {
+        return JSON.parse(val.toString());
+      } else {
+        const response = await fetchPlace;
+        await cacheSet(placeid, JSON.stringify(response), {});
+        return response;
+      }
+    } catch(err) {
+      return await fetchPlace;
+    }
+  },
+});
+
 const startServer = async () => {
   // Static file handling - serves everything from the assets directory at the root
   await server.register(inert);
-  server.route({
-    method: 'GET',
-    path: '/open',
-    handler: (request, h) => {
-      const { lat, long } = request.query;
-      const location = `${lat},${long}`;
-      const qs = {
-        key: apiParameters.apiKey,
-        location,
-        type: 'restaurant',
-        rankby: 'distance',
-        opennow: 'true',
-      };
 
-      console.log(`Request sent from ${location}`);
-
-      return fetch(makeUrl(apiParameters.listUrl, qs)).then(result => result.json());
-    },
-  });
-
-  server.route({
-    method: 'GET',
-    path: '/place/{placeid}',
-    handler: async (request, h) => {
-      const { placeid } = request.params;
-      const qs = {
-          placeid,
-          key: apiParameters.apiKey,
-      };
-
-      const fetchPlace = fetch(makeUrl(apiParameters.placeUrl, qs)).then(result => result.json());
-
-      try {
-        const val = cacheGet(placeid);
-        if(val) {
-          return JSON.parse(val.toString());
-        } else {
-          const response = await fetchPlace;
-          await cacheSet(placeid, JSON.stringify(response), {});
-          return response;
-        }
-      } catch(err) {
-        return await fetchPlace;
-      }
-    },
-  });
-  
   server.route({
     method: 'GET',
     path: '/{param*}',
