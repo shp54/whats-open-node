@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "main": "app.js",
   "dependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.1",
     "bluebird": "^3.5.1",
     "browserify": "^14.0.0",
     "hapi": "^17.2.0",
@@ -10,11 +13,13 @@
     "inert": "^5.0.1",
     "memjs": "^1.0.0-rc.1",
     "moment": "^2.18.1",
-    "node-fetch": "^1.7.3"
+    "node-fetch": "^1.7.3",
+    "path": "^0.12.7",
+    "webpack": "^3.10.0"
   },
   "scripts": {
     "start": "node app.js",
-    "build": "browserify client/main.js > assets/js/bundle.js",
+    "build": "node node_modules/webpack/bin/webpack.js",
     "postinstall": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
