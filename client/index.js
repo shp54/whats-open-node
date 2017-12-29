@@ -2,7 +2,7 @@ const { h, app } = require('hyperapp');
 const geoPosition = require('../lib/geoPosition');
 
 const Result = ({ place }) => (
-  <li>
+  <li class='list-group-item'>
   {place.placeUrl ?
     <a href={place.placeUrl} target='_blank'><h3>{place.name}</h3></a>
   	: <h3>{place.name}</h3>}
