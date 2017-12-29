@@ -1,6 +1,17 @@
 const { h, app } = require('hyperapp');
 const geoPosition = require('../lib/geoPosition');
 
+const Result = ({ place }) => (
+  <li>
+  {place.placeUrl ?
+    <a href={place.placeUrl} target='_blank'><h3>{place.name}</h3></a>
+  	: <h3>{place.name}</h3>}
+    <span class='address'>{place.vicinity}</span>
+    {place.closingTime ? <div class='closingTime'>Open until {place.closingTime} today</div> : null}
+    {/*<img src={place.icon} alt={place.types[0]} title={place.types[0]} class='icon' width='53' height='53' />*/}
+  </li>
+);
+
 const state = {
  isLoading: true,
  latitude: null,
@@ -22,12 +33,16 @@ const actions = {
 
 const view = (state, actions) => (
   <main>
-    {state.isLoading ? <img src='images/spinner.gif' /> : null}
-    <div>{JSON.stringify(state.results)}</div>
+    {state.isLoading ?
+      <img src='images/spinner.gif' /> :
+      (<ul class='list-group'>
+        {state.results.map(result => <Result place={result} />)}
+      </ul>)
+    }
   </main>
 );
 
-const main = app(state, actions, view, document.body);
+const main = app(state, actions, view, document.getElementById('app'));
 
 geoPosition.init();
 geoPosition.getCurrentPosition(p => {
