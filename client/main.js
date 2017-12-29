@@ -1,4 +1,35 @@
-let $ = require('jquery'),
+const { h, app } = require('hyperapp');
+
+const state = { 
+ isLoading: true,
+ lat: 42.3565551,
+ long: -71.18526419999999,
+ results: [],
+};
+
+const actions = {
+  setResults: results => (state, actions) => ({ results }),
+  setLoading: isLoading => (state, actions) => ({ isLoading }),
+  fetchData: () => (state, actions) => { 
+    actions.setLoading(true);
+    fetch(`/open?lat=${state.lat}&long=${state.long}`)
+      .then(res => res.json())
+      .then(data => {
+	actions.setLoading(false);
+	actions.setResults(data.results);
+      });
+  },
+};
+
+const view = (state, actions) => h("div", {}, [
+  h("div", {}, state.loading ? "Loading..." : "Done"),
+  h("div", {}, JSON.stringify(state.results)),
+]);
+
+const main = app(state, actions, view, document.body);
+
+main.fetchData();
+/* let $ = require('jquery'),
 	Backbone = require('backbone'),
 	ResultsView = require('./results/results-view'),
 	ResultsCollection = require('./results/results-collection'),
@@ -8,7 +39,6 @@ let AppView = Backbone.View.extend({
 	el: "body",
 	geoSuccess(p){
 		let { latitude, longitude } = p.coords;
-		console.log(`Found user's location at ${latitude}, ${longitude}`); //store position and poll loadResults repeatedly if position is gotten
 		this.loadResults(latitude, longitude)
 		setTimeout(() => {
 			this.loadResults(latitude, longitude)
@@ -42,4 +72,4 @@ function init(){
 	let app = new AppView(); //Kickstart the app
 }
 
-$(() => { init() }); //Here we go!
+$(() => { init() }); //Here we go! */
