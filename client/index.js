@@ -20,17 +20,18 @@ const actions = {
   },
 };
 
-const view = (state, actions) =>  h("div", {}, [
-  h("div", {}, [
-   state.isLoading ? h("img", {src: 'images/spinner.gif'}) : null
-  ]),
-  h("div", {}, JSON.stringify(state.results)),
-]);
+const view = (state, actions) => (
+  <main>
+    {state.isLoading ? <img src='images/spinner.gif' /> : null}
+    <div>{JSON.stringify(state.results)}</div>
+  </main>
+);
 
 const main = app(state, actions, view, document.body);
 
 geoPosition.init();
 geoPosition.getCurrentPosition(p => {
   main.setLocation(p.coords);
-  setTimeout(() => main.fetchData(), 60000);
+  main.fetchData();
+  setTimeout(main.fetchData, 60000);
 }, p => console.log('Error :('));

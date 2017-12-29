@@ -11,10 +11,6 @@ module.exports = {
     rules: [{
       test: /\.js$/,
       loader: 'babel-loader',
-      query: {
-        presets: ['env'],
-        plugins: [],
-      },
       include:  [path.resolve(__dirname, './')],
       exclude: /node_modules/,
     }],
