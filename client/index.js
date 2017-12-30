@@ -24,10 +24,13 @@ const actions = {
 const view = (state, actions) => (
   <main>
     {state.isLoading ?
-      <img src='images/spinner.gif' /> :
-      (<ul class='list-group'>
-        {state.results.map(result => <Result place={result} />)}
-      </ul>)
+      <img src='images/spinner.gif' height='160' width='160' class='spinner-gif' /> :
+      (<div>
+        <h3>Ranked by distance</h3>
+        <ul class='list-group'>
+          {state.results.map(result => <Result place={result} />)}
+        </ul>
+      </div>)
     }
   </main>
 );
