@@ -22,8 +22,7 @@ const actions = {
 };
 
 const view = (state, actions) => (
-  <main>
-    {state.isLoading ?
+    state.isLoading ?
       <img src='images/spinner.gif' height='160' width='160' class='spinner-gif' /> :
       (<div>
         <h3>Ranked by distance</h3>
@@ -31,8 +30,6 @@ const view = (state, actions) => (
           {state.results.map(result => <Result place={result} />)}
         </ul>
       </div>)
-    }
-  </main>
 );
 
 const main = app(state, actions, view, document.getElementById('app'));
