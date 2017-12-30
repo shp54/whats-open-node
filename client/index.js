@@ -1,6 +1,10 @@
 const { h, app } = require('hyperapp');
 const geoPosition = require('../lib/geoPosition');
 const Result = require('./components/Result.jsx');
+const spinner = require('./images/spinner.gif');
+
+require("./styles/bootstrap.css"); // Using custom version of bootstrap w/o fonts, should probably restyle using semantic-ui (I like it more)
+require("./styles/main.css")
 
 const state = {
  isLoading: true,
@@ -23,7 +27,7 @@ const actions = {
 
 const view = (state, actions) => (
     state.isLoading ?
-      <img src='images/spinner.gif' height='160' width='160' class='spinner-gif' /> :
+      <img src={spinner} height='160' width='160' class='spinner-gif' /> :
       (<div>
         <h3>Ranked by distance</h3>
         <ul class='list-group'>
@@ -40,3 +44,4 @@ geoPosition.getCurrentPosition(p => {
   main.fetchData();
   setTimeout(main.fetchData, 60000);
 }, p => console.log('Error :('));
+// TODO need to give a nicer UX - Dispatch an action that sets an error prop on the state?

@@ -20,6 +20,17 @@ module.exports = {
       },
       include:  [path.resolve(__dirname, './')],
       exclude: /node_modules/,
+    },
+    {
+      test: /\.gif$/,
+      loader: 'base64-image-loader',
+      include:  [path.resolve(__dirname, './')],
+      exclude: /node_modules/,
+    },
+    {
+      test: /\.css$/,
+      loader: ['style-loader', 'css-loader'],
+      include:  [path.resolve(__dirname, './')],
     }],
   },
   plugins: [],
