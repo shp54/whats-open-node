@@ -11,6 +11,13 @@ module.exports = {
     rules: [{
       test: /\.jsx?$/,
       loader: 'babel-loader',
+      query: {
+        plugins:  [
+          ['transform-react-jsx', {
+            'pragma': 'h'
+          }]
+        ],
+      },
       include:  [path.resolve(__dirname, './')],
       exclude: /node_modules/,
     }],
