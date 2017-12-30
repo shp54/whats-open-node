@@ -10,18 +10,30 @@ const state = {
  isLoading: true,
  latitude: null,
  longitude: null,
- results: [],
+ results: {},
 };
 
 const actions = {
   setLoading: isLoading => (state, actions) => ({ isLoading }),
   setLocation: ({ latitude, longitude }) => (state, actions) => ({ latitude, longitude }),
-  finishFetch: results => (state, actions) => ({ isLoading: false, results }),
-  fetchData: () => (state, actions) => {
-    actions.setLoading(true);
+  finishListFetch: () => (state, actions) => ({ isLoading: false }),
+  addResult: (result) => (state, actions) => ({ results: Object.assign(state.results, { [result.place_id]: result }) }),
+  fetchPlace: (place_id) => (state, actions) => {
+    // Google fetches light versions of each model from the list call, so have to make another call to get all the details
+    fetch(`/place/${place_id}`)
+      .then(res => res.json())
+      .then(data => actions.addResult(data.result));
+  },
+  fetchList: () => (state, actions) => {
     fetch(`/open?lat=${state.latitude}&long=${state.longitude}`)
       .then(res => res.json())
-      .then(data => actions.finishFetch(data.results));
+      .then(data => {
+        actions.finishListFetch(); // sets loading to false
+        data.results.forEach(result => {
+          actions.addResult(result); // rendering is cheap with vdom - let's go nuts
+          actions.fetchPlace(result.place_id);
+        });
+      });
   },
 };
 
@@ -31,7 +43,7 @@ const view = (state, actions) => (
       (<div>
         <h3>Ranked by distance</h3>
         <ul class='list-group'>
-          {state.results.map(result => <Result place={result} />)}
+          {Object.values(state.results).map(result => <Result place={result} />)}
         </ul>
       </div>)
 );
@@ -41,7 +53,7 @@ const main = app(state, actions, view, document.getElementById('app'));
 geoPosition.init();
 geoPosition.getCurrentPosition(p => {
   main.setLocation(p.coords);
-  main.fetchData();
-  setTimeout(main.fetchData, 60000);
+  main.fetchList();
+  setTimeout(main.fetchList, 60000);
 }, p => console.log('Error :('));
 // TODO need to give a nicer UX - Dispatch an action that sets an error prop on the state?
