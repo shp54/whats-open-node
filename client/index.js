@@ -7,7 +7,7 @@ require("./styles/bootstrap.css"); // Using custom version of bootstrap w/o font
 require("./styles/main.css")
 
 const state = {
- isLoading: true,
+ isLoading: false,
  latitude: null,
  longitude: null,
  results: {},
@@ -23,6 +23,7 @@ const actions = {
       .then(data => actions.addResult(data.result)); // addResult can smart update the entire state
   },
   fetchList: () => (state, actions) => {
+    actions.setLoading(true);
     fetch(`/open?lat=${state.latitude}&long=${state.longitude}`)
       .then(res => res.json())
       .then(data => {
