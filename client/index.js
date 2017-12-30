@@ -14,12 +14,10 @@ const state = {
 };
 
 const actions = {
-  setLoading: isLoading => (state, actions) => ({ isLoading }),
   setLocation: ({ latitude, longitude }) => (state, actions) => ({ latitude, longitude }),
-  finishListFetch: () => (state, actions) => ({ isLoading: false }),
+  setLoading: isLoading => (state, actions) => ({ isLoading }),
   addResult: result => (state, actions) => ({ results: Object.assign(state.results, { [result.place_id]: result }) }),
   fetchPlace: place_id => (state, actions) => {
-    // Google fetches light versions of each model from the list call, so have to make another call to get all the details
     fetch(`/place/${place_id}`)
       .then(res => res.json())
       .then(data => actions.addResult(data.result)); // addResult can smart update the entire state
@@ -28,10 +26,10 @@ const actions = {
     fetch(`/open?lat=${state.latitude}&long=${state.longitude}`)
       .then(res => res.json())
       .then(data => {
-        actions.finishListFetch(); // sets loading to false
+        actions.setLoading(false);
         data.results.forEach(result => {
           actions.addResult(result); // rendering is cheap with vdom - let's go nuts
-          actions.fetchPlace(result.place_id);
+          actions.fetchPlace(result.place_id); // fetch details for each place
         });
       });
   },
