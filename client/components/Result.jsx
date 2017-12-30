@@ -5,18 +5,16 @@ const ConditionalLink = require('./ConditionalLink.jsx');
 // if there's just one period, return the one they got
 // otherwise find the one for the current weekday
 const getHoursForWeekday = (periods, weekday) => {
-  if(periods && periods.length > 1){
-    return periods.filter(p => p.open.day === weekday)[0];
-  } else {
-    return periods && periods[0] || {};
-  }
+  return periods.length > 1 ?
+    periods.filter(p => p.open.day === weekday)[0] :
+    periods[0];
 };
 
 // Could use reselect selector for this?
 const getClosingTime = (place) => {
     const currentWeekday = moment().day();
-    const hoursToday = getHoursForWeekday(place.opening_hours.periods, currentWeekday);
-    return hoursToday.close ? moment(hoursToday.close.time, 'HH').format('LT') : '';
+    const hoursToday = getHoursForWeekday(place.opening_hours.periods || [], currentWeekday);
+    return hoursToday && hoursToday.close ? moment(hoursToday.close.time, 'HH').format('LT') : '';
 };
 
 const Result = ({ place }) => (
