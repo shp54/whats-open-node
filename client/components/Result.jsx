@@ -1,9 +1,12 @@
 const { h } = require('hyperapp');
+const ConditionalLink = require('./ConditionalLink.jsx');
 
 const Result = ({ place }) => (
   <li class='list-group-item'>
     <img src={place.icon} alt={place.types[0]} title={place.types[0]} class='icon' width='53' height='53' />
-    {place.placeUrl ?  <a href={place.placeUrl} target='_blank'><h3>{place.name}</h3></a> : <h3>{place.name}</h3>}
+    <ConditionalLink url={place.placeUrl}>
+      <h3>{place.name}</h3>
+    </ConditionalLink>
     <span class='address'>{place.vicinity}</span>
     {place.closingTime ? <div class='closingTime'>Open until {place.closingTime} today</div> : null}
   </li>

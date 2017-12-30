@@ -3,16 +3,16 @@ body {
 }
 
 .icon {
-    float: right;
-		margin-top: -45px;
+	float: right;
+	margin-top: 10px;
 }
 
 .list-group-item {
-    list-style-type: none;
+	list-style-type: none;
 }
 
 .spinner-gif {
 	display: block;
-    margin-left: auto;
-    margin-right: auto
+	margin-left: auto;
+	margin-right: auto
 }
