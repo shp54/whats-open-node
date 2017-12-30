@@ -1,6 +1,6 @@
 const { h, app } = require('hyperapp');
 const geoPosition = require('../lib/geoPosition');
-const Result = require('./components/Result.jsx')
+const Result = require('./components/Result.jsx');
 
 const state = {
  isLoading: true,
