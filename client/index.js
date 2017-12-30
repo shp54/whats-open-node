@@ -17,12 +17,12 @@ const actions = {
   setLoading: isLoading => (state, actions) => ({ isLoading }),
   setLocation: ({ latitude, longitude }) => (state, actions) => ({ latitude, longitude }),
   finishListFetch: () => (state, actions) => ({ isLoading: false }),
-  addResult: (result) => (state, actions) => ({ results: Object.assign(state.results, { [result.place_id]: result }) }),
-  fetchPlace: (place_id) => (state, actions) => {
+  addResult: result => (state, actions) => ({ results: Object.assign(state.results, { [result.place_id]: result }) }),
+  fetchPlace: place_id => (state, actions) => {
     // Google fetches light versions of each model from the list call, so have to make another call to get all the details
     fetch(`/place/${place_id}`)
       .then(res => res.json())
-      .then(data => actions.addResult(data.result));
+      .then(data => actions.addResult(data.result)); // addResult can smart update the entire state
   },
   fetchList: () => (state, actions) => {
     fetch(`/open?lat=${state.latitude}&long=${state.longitude}`)
