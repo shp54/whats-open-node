@@ -30,7 +30,7 @@ const actions = {
         actions.setLoading(false);
         data.results.forEach(result => {
           actions.addResult(result); // rendering is cheap with vdom - let's go nuts
-          actions.fetchPlace(result.place_id); // fetch details for each place
+          actions.fetchPlace(result.place_id); // fetch detailed model for each place - Google fetches partial model from list endpoint
         });
       });
   },
