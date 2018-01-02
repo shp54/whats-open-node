@@ -65,22 +65,6 @@ server.route({
   },
 });
 
-<<<<<<< HEAD
-// Forces https in production
-if(env === 'production'){
-  server.ext({
-    type: 'onRequest',
-    method: (request, h) => {
-      if(request.headers['x-forwarded-proto'] !== 'https') {
-        h.redirect('https://' + request.info.host + request.url).code(301);
-      }
-      return h.continue;
-    },
-  });
-}
-
-=======
->>>>>>> delete-middleware
 const startServer = async () => {
   // Static file handling - serves everything from the assets directory at the root
   await server.register(inert);
