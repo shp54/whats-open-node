@@ -65,6 +65,7 @@ server.route({
   },
 });
 
+<<<<<<< HEAD
 // Forces https in production
 if(env === 'production'){
   server.ext({
@@ -78,6 +79,8 @@ if(env === 'production'){
   });
 }
 
+=======
+>>>>>>> delete-middleware
 const startServer = async () => {
   // Static file handling - serves everything from the assets directory at the root
   await server.register(inert);
