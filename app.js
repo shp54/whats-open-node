@@ -65,6 +65,26 @@ server.route({
   },
 });
 
+// Forces https in production
+if ('production' === process.env.NODE_ENV) {
+  server.ext('onRequest', function (request, h) {
+    if (request.headers['x-forwarded-proto'] !== 'https') {
+      request.originalPath = request.path;
+      request.setUrl('/redirect');
+    }
+    return h.continue;
+  });
+
+  server.route({
+    method: 'GET',
+    path: '/redirect',
+    handler: function (request, h) {
+      var host = request.headers.host;
+      return h.redirect('https://' + host + request.originalPath);
+    }
+  });
+}
+
 const startServer = async () => {
   // Static file handling - serves everything from the assets directory at the root
   await server.register(inert);
