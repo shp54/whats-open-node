@@ -65,20 +65,23 @@ server.route({
   },
 });
 
-// Forces https in production
-if ('production' === process.env.NODE_ENV) {
-  server.ext('onRequest', function (request, h) {
-    if (request.headers['x-forwarded-proto'] !== 'https') {
-      request.originalPath = request.path;
-      request.setUrl('/redirect');
-    }
-    return h.continue;
+// Forces https in production - https://stackoverflow.com/questions/23696255/node-js-hapi-js-and-heroku-how-to-handle-https
+if (env === 'production') {
+  server.ext({
+    type: 'onRequest',
+    method: (request, h) => {
+     if (request.headers['x-forwarded-proto'] !== 'https') {
+       request.originalPath = request.path;
+       request.setUrl('/redirect');
+     }
+     return h.continue;
+   },
   });
 
   server.route({
     method: 'GET',
     path: '/redirect',
-    handler: function (request, h) {
+    handler: (request, h) => {
       var host = request.headers.host;
       return h.redirect('https://' + host + request.originalPath);
     }
