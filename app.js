@@ -71,7 +71,7 @@ if(env === 'production'){
     type: 'onRequest',
     method: (request, h) => {
       if(request.headers['x-forwarded-proto'] !== 'https') {
-        return h.redirect('https://' + request.info.host + request.url);
+        h.redirect('https://' + request.info.host + request.url).code(301);
       }
       return h.continue;
     },
