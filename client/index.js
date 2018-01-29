@@ -14,8 +14,8 @@ const state = {
 };
 
 const actions = {
-  setLocation: ({ latitude, longitude }) => (state, actions) => ({ latitude, longitude }),
-  setLoading: isLoading => (state, actions) => ({ isLoading }),
+  setLocation: ({ latitude, longitude }) => ({ latitude, longitude }),
+  setLoading: isLoading => ({ isLoading }),
   addResult: result => (state, actions) => ({ results: Object.assign(state.results, { [result.place_id]: result }) }),
   fetchPlace: place_id => (state, actions) => {
     fetch(`/place/${place_id}`)
@@ -23,7 +23,7 @@ const actions = {
       .then(data => actions.addResult(data.result)); // addResult can smart update the entire state
   },
   fetchList: () => (state, actions) => {
-    state.loading != true && actions.setLoading(true);
+    !state.loading && actions.setLoading(true);
     fetch(`/open?lat=${state.latitude}&long=${state.longitude}`)
       .then(res => res.json())
       .then(data => {
@@ -37,14 +37,13 @@ const actions = {
 };
 
 const view = (state, actions) => (
-    state.isLoading ?
-      <img src={spinner} height='160' width='160' class='spinner-gif' /> :
-      (<div>
-        <h3>Ranked by distance</h3>
-        <ul class='list-group'>
-          {Object.values(state.results).map(result => <Result place={result} />)}
-        </ul>
-      </div>)
+  <div>
+    <h3>Ranked by distance</h3>
+    <ul class='list-group'>
+      {Object.values(state.results).map(result => <Result place={result} />)}
+      {state.isLoading && <img src={spinner} height='160' width='160' class='spinner-gif' /> }
+    </ul>
+  </div>
 );
 
 const main = app(state, actions, view, document.getElementById('app'));
