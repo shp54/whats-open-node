@@ -26,9 +26,9 @@ const actions = {
   updatePlaces: () => (state, actions) => {
     Object.keys(state.results).forEach(actions.fetchPlace);
   },
-  fetchList: () => (state, actions) => {
+  fetchPlaceList:  (url) => (state, actions) => {
     !state.loading && actions.setLoading(true);
-    fetch(`/open?lat=${state.latitude}&long=${state.longitude}`)
+    fetch(url)
       .then(res => res.json())
       .then(data => {
         actions.setLoading(false);
@@ -39,19 +39,14 @@ const actions = {
         });
       });
   },
+  fetchList: () => (state, actions) => {
+    !state.loading && actions.setLoading(true);
+    actions.fetchPlaceList(`/open?lat=${state.latitude}&long=${state.longitude}`);
+  },
   fetchNext: () => (state, actions) => {
     !state.loading && actions.setLoading(true);
     if (state.nextPageToken) {
-      fetch(`/open?pagetoken=${state.nextPageToken}`)
-        .then(res => res.json())
-        .then(data => {
-          actions.setLoading(false);
-          actions.setNextPageToken(data.next_page_token);
-          data.results.forEach(result => {
-            actions.addResult(result); // rendering is cheap with vdom - let's go nuts
-            actions.fetchPlace(result.place_id); // fetch detailed model for each place - Google fetches partial model from list endpoint
-          });
-        });
+      actions.fetchPlaceList(`/open?pagetoken=${state.nextPageToken}`);
     }
   },
 };
