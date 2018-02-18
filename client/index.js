@@ -73,9 +73,7 @@ geoPosition.getCurrentPosition(p => {
 
 
 window.addEventListener("scroll", function() { 
-  console.log("Scrolling...", window.scrollY + window.innerHeight);
   if (window.scrollY + window.innerHeight >= document.documentElement.offsetHeight) {
-    console.log("Scrolled to bottom!");
     main.fetchNext();
   }
 });
