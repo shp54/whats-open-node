@@ -7,14 +7,15 @@ require("./styles/bootstrap.css"); // Using custom version of bootstrap w/o font
 require("./styles/main.css")
 
 const state = {
- isLoading: true,
- latitude: null,
- longitude: null,
- results: {},
+  isLoading: true,
+  latitude: null,
+  longitude: null,
+  results: {},
 };
 
 const actions = {
   setLocation: ({ latitude, longitude }) => ({ latitude, longitude }),
+  setNextPageToken: (nextPageToken) => ({ nextPageToken }),
   setLoading: isLoading => ({ isLoading }),
   addResult: result => (state, actions) => ({ results: Object.assign(state.results, { [result.place_id]: result }) }),
   fetchPlace: place_id => (state, actions) => {
@@ -22,17 +23,36 @@ const actions = {
       .then(res => res.json())
       .then(data => actions.addResult(data.result)); // addResult can smart update the entire state
   },
+  updatePlaces: () => (state, actions) => {
+    Object.keys(state.results).forEach(actions.fetchPlace);
+  },
   fetchList: () => (state, actions) => {
     !state.loading && actions.setLoading(true);
     fetch(`/open?lat=${state.latitude}&long=${state.longitude}`)
       .then(res => res.json())
       .then(data => {
         actions.setLoading(false);
+        actions.setNextPageToken(data.next_page_token);
         data.results.forEach(result => {
           actions.addResult(result); // rendering is cheap with vdom - let's go nuts
           actions.fetchPlace(result.place_id); // fetch detailed model for each place - Google fetches partial model from list endpoint
         });
       });
+  },
+  fetchNext: () => (state, actions) => {
+    !state.loading && actions.setLoading(true);
+    if (state.nextPageToken) {
+      fetch(`/open?pagetoken=${state.nextPageToken}`)
+        .then(res => res.json())
+        .then(data => {
+          actions.setLoading(false);
+          actions.setNextPageToken(data.next_page_token);
+          data.results.forEach(result => {
+            actions.addResult(result); // rendering is cheap with vdom - let's go nuts
+            actions.fetchPlace(result.place_id); // fetch detailed model for each place - Google fetches partial model from list endpoint
+          });
+        });
+    }
   },
 };
 
@@ -52,6 +72,15 @@ geoPosition.init();
 geoPosition.getCurrentPosition(p => {
   main.setLocation(p.coords);
   main.fetchList();
-  setTimeout(main.fetchList, 60000);
+  setTimeout(main.updatePlaces, 60000);
 }, p => console.log('Error :('));
 // TODO need to give a nicer UX - Dispatch an action that sets an error prop on the state?
+
+
+window.addEventListener("scroll", function() { 
+  console.log("Scrolling...", window.scrollY + window.innerHeight);
+  if (window.scrollY + window.innerHeight >= document.documentElement.offsetHeight) {
+    console.log("Scrolled to bottom!");
+    main.fetchNext();
+  }
+});

@@ -22,15 +22,19 @@ server.route({
   method: 'GET',
   path: '/open',
   handler: (request, h) => {
-    const { lat, long } = request.query;
+    const { lat, long, pagetoken } = request.query;
     const location = `${lat},${long}`;
-    const qs = {
+    let qs = {
       key: apiParameters.apiKey,
       location,
       type: 'restaurant',
       rankby: 'distance',
       opennow: 'true',
     };
+
+    if (pagetoken) {
+      qs.pagetoken = pagetoken;
+    }
 
     console.log(`Request sent from ${location}`);
 
