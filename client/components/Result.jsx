@@ -1,19 +1,6 @@
 const { h } = require('hyperapp');
-const moment = require('moment');
 const ConditionalLink = require('./ConditionalLink.jsx');
-
-// if there's just one period, return the one they got
-// otherwise find the one for the current weekday
-const getHoursForWeekday = (periods, weekday) =>
-  periods.length > 1 ?
-    periods.find(p => p.open.day === moment().day()) :
-    periods[0];
-
-// Could use reselect selector for this?
-const getClosingTime = (place) => {
-  const hoursToday = getHoursForWeekday(place.opening_hours.periods || []);
-  return hoursToday && hoursToday.close ? moment(hoursToday.close.time, 'HH').format('LT') : '';
-};
+const getClosingTime = require('../selectors');
 
 const Result = ({ place }) => (
   <li class='list-group-item'>
