@@ -20,8 +20,8 @@ geoPosition.getCurrentPosition(p => {
 }, p => console.log('Error :('));
 // TODO need to give a nicer UX - Dispatch an action that sets an error prop on the state?
 
-window.addEventListener("scroll", function() { 
-  if (window.scrollY + window.innerHeight >= document.documentElement.offsetHeight) {
+window.addEventListener("scroll", () => {
+  if (Math.ceil(window.scrollY + window.innerHeight) >= document.documentElement.offsetHeight) {
     main.fetchNext();
   }
-});
+})
