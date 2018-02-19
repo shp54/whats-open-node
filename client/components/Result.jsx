@@ -1,19 +1,30 @@
 const { h } = require('hyperapp');
 const moment = require('moment');
+const createCachedSelector = require('re-reselect').default;
 const ConditionalLink = require('./ConditionalLink.jsx');
 
-// if there's just one period, return the one they got
-// otherwise find the one for the current weekday
-const getHoursForWeekday = (periods, weekday) =>
-  periods.length > 1 ?
-    periods.find(p => p.open.day === moment().day()) :
-    periods[0];
+// format hours
+const formatHours = hours => hours && hours.close ? moment(hours.close.time, 'HH').format('LT') : '';
 
-// Could use reselect selector for this?
-const getClosingTime = (place) => {
-  const hoursToday = getHoursForWeekday(place.opening_hours.periods || []);
-  return hoursToday && hoursToday.close ? moment(hoursToday.close.time, 'HH').format('LT') : '';
-};
+// Get periods a place is open from API response
+const getPeriods = place => place.opening_hours.periods || [];
+const getDay = () => moment().day();
+const getHoursForToday = createCachedSelector(
+  getPeriods,
+  getDay,
+  (periods, day) => periods.length > 1 ?
+    periods.find(p => p.open.day === day) :
+    periods[0]
+)(
+  (place, periods, day) => place.id + '-' + day,
+);
+
+const getClosingTime = createCachedSelector(
+  getHoursForToday,	
+  formatHours,
+)(
+  place => place.id,
+);
 
 const Result = ({ place }) => (
   <li class='list-group-item'>

@@ -9,7 +9,9 @@
     "inert": "^5.0.1",
     "memjs": "^1.0.0-rc.1",
     "moment": "^2.18.1",
-    "node-fetch": "^1.7.3"
+    "node-fetch": "^1.7.3",
+    "re-reselect": "^1.0.1",
+    "reselect": "^3.0.1"
   },
   "scripts": {
     "start": "node app.js",
